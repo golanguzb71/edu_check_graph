@@ -27,21 +27,18 @@ func main() {
 	config.LoadDB()
 	db := config.DB
 
-	// Initialize repositories
 	groupRepo := repository.NewGroupRepository(db)
 	answerRepo := repository.NewAnswerRepository(db)
 	collectionRepo := repository.NewCollectionRepository(db)
 	studentRepo := repository.NewStudentRepository(db)
 	questionRepo := repository.NewQuestionRepository(db)
 
-	// Initialize services
 	groupService := service.NewGroupService(groupRepo)
 	answerService := service.NewAnswerService(answerRepo)
 	collectionService := service.NewCollectionService(collectionRepo)
 	studentService := service.NewStudentService(studentRepo)
 	questionService := service.NewQuestionService(questionRepo)
 
-	// Start GraphQL server
 	gqlServer := startGraphQLServer(port, groupService, answerService, collectionService, studentService, questionService)
 
 	waitForShutDown(gqlServer)

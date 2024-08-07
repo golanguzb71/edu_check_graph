@@ -2,6 +2,12 @@
 
 package model
 
+import (
+	"fmt"
+	"io"
+	"strconv"
+)
+
 type Answer struct {
 	ID          string `json:"id"`
 	IsTrue      bool   `json:"isTrue"`
@@ -9,6 +15,11 @@ type Answer struct {
 	AnswerField string `json:"answerField"`
 	CreatedAt   string `json:"createdAt"`
 	UpdatedAt   string `json:"updatedAt"`
+}
+
+type AnswerInput struct {
+	IsTrue      bool   `json:"isTrue"`
+	AnswerField string `json:"answerField"`
 }
 
 type Collection struct {
@@ -64,4 +75,60 @@ type Student struct {
 	FullName    string `json:"fullName"`
 	CreatedAt   string `json:"createdAt"`
 	UpdatedAt   string `json:"updatedAt"`
+}
+
+type TestQuestion struct {
+	QuestionField string         `json:"questionField"`
+	Answers       []*AnswerInput `json:"answers"`
+}
+
+type GroupLevel string
+
+const (
+	GroupLevelBeginner          GroupLevel = "BEGINNER"
+	GroupLevelElementary        GroupLevel = "ELEMENTARY"
+	GroupLevelPreIntermediate   GroupLevel = "PRE_INTERMEDIATE"
+	GroupLevelIntermediate      GroupLevel = "INTERMEDIATE"
+	GroupLevelUpperIntermediate GroupLevel = "UPPER_INTERMEDIATE"
+	GroupLevelAdvanced          GroupLevel = "ADVANCED"
+	GroupLevelProficient        GroupLevel = "PROFICIENT"
+)
+
+var AllGroupLevel = []GroupLevel{
+	GroupLevelBeginner,
+	GroupLevelElementary,
+	GroupLevelPreIntermediate,
+	GroupLevelIntermediate,
+	GroupLevelUpperIntermediate,
+	GroupLevelAdvanced,
+	GroupLevelProficient,
+}
+
+func (e GroupLevel) IsValid() bool {
+	switch e {
+	case GroupLevelBeginner, GroupLevelElementary, GroupLevelPreIntermediate, GroupLevelIntermediate, GroupLevelUpperIntermediate, GroupLevelAdvanced, GroupLevelProficient:
+		return true
+	}
+	return false
+}
+
+func (e GroupLevel) String() string {
+	return string(e)
+}
+
+func (e *GroupLevel) UnmarshalGQL(v interface{}) error {
+	str, ok := v.(string)
+	if !ok {
+		return fmt.Errorf("enums must be strings")
+	}
+
+	*e = GroupLevel(str)
+	if !e.IsValid() {
+		return fmt.Errorf("%s is not a valid GroupLevel", str)
+	}
+	return nil
+}
+
+func (e GroupLevel) MarshalGQL(w io.Writer) {
+	fmt.Fprint(w, strconv.Quote(e.String()))
 }

@@ -3,7 +3,9 @@ package repository
 import (
 	"database/sql"
 	"edu_test_graph/graph/model"
+	"fmt"
 	"log"
+	"time"
 )
 
 type GroupRepository struct {
@@ -25,22 +27,66 @@ func (r *GroupRepository) Create(group *model.Group) error {
 	return nil
 }
 
-// Get retrieves a group by ID.
-func (r *GroupRepository) Get(id int) (*model.Group, error) {
-	row := r.db.QueryRow("SELECT id, name, teacher_name, level, created_at, updated_at FROM groups WHERE id = ?", id)
-	group := &model.Group{}
-	err := row.Scan(&group.ID, &group.Name, &group.TeacherName, &group.Level, &group.CreatedAt, &group.UpdatedAt)
-	if err != nil {
-		log.Printf("Error retrieving group: %v", err)
-		return nil, err
+func (r *GroupRepository) Get(id *string, orderLevel *bool) ([]*model.Group, error) {
+	var (
+		rows *sql.Rows
+		err  error
+	)
+
+	if id != nil {
+		sql := `SELECT id, name, teacher_name, level, created_at, updated_at FROM groups WHERE id = ?`
+		rows, err = r.db.Query(sql, id)
+	} else {
+		sql := `SELECT id, name, teacher_name, level, created_at, updated_at FROM groups`
+		if orderLevel != nil {
+			sql += ` order by level`
+		}
+		rows, err = r.db.Query(sql)
 	}
-	return group, nil
+
+	if err != nil {
+		return nil, fmt.Errorf("query error: %w", err)
+	}
+	defer rows.Close()
+
+	var groups []*model.Group
+
+	for rows.Next() {
+		var (
+			id          int
+			name        string
+			teacherName string
+			level       string
+			createdAt   time.Time
+			updatedAt   time.Time
+		)
+
+		if err := rows.Scan(&id, &name, &teacherName, &level, &createdAt, &updatedAt); err != nil {
+			return nil, fmt.Errorf("scan error: %w", err)
+		}
+
+		group := &model.Group{
+			ID:          fmt.Sprintf("%d", id),
+			Name:        name,
+			TeacherName: teacherName,
+			Level:       level,
+			CreatedAt:   createdAt.Format(time.RFC3339),
+			UpdatedAt:   updatedAt.Format(time.RFC3339),
+		}
+
+		groups = append(groups, group)
+	}
+
+	if err := rows.Err(); err != nil {
+		return nil, fmt.Errorf("rows error: %w", err)
+	}
+
+	return groups, nil
 }
 
-// Update updates an existing group in the database.
 func (r *GroupRepository) Update(group *model.Group) error {
 	_, err := r.db.Exec("UPDATE groups SET name = ?, teacher_name = ?, level = ?, updated_at = ? WHERE id = ?",
-		group.Name, group.TeacherName, group.Level, group.UpdatedAt, group.ID)
+		group.Name, group.TeacherName, group.Level, time.Now(), group.ID)
 	if err != nil {
 		log.Printf("Error updating group: %v", err)
 		return err

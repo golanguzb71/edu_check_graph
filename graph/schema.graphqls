@@ -14,23 +14,23 @@ type Student {
     id: ID!
     phoneNumber: String!
     fullName: String!
-    createdAt: String! # Use String for date-time in GraphQL
-    updatedAt: String! # Use String for date-time in GraphQL
+    createdAt: String!
+    updatedAt: String!
 }
 
 type Collection {
     id: ID!
     name: String!
-    createdAt: String! # Use String for date-time in GraphQL
-    updatedAt: String! # Use String for date-time in GraphQL
+    createdAt: String!
+    updatedAt: String!
 }
 
 type Question {
     id: ID!
     questionField: String!
     collectionID: ID!
-    createdAt: String! # Use String for date-time in GraphQL
-    updatedAt: String! # Use String for date-time in GraphQL
+    createdAt: String!
+    updatedAt: String!
 }
 
 type Answer {
@@ -38,35 +38,63 @@ type Answer {
     isTrue: Boolean!
     questionID: ID!
     answerField: String!
-    createdAt: String! # Use String for date-time in GraphQL
-    updatedAt: String! # Use String for date-time in GraphQL
+    createdAt: String!
+    updatedAt: String!
 }
+
+
 
 type Group {
     id: ID!
     name: String!
     teacherName: String!
     level: String!
-    createdAt: String! # Use String for date-time in GraphQL
-    updatedAt: String! # Use String for date-time in GraphQL
+    createdAt: String!
+    updatedAt: String!
 }
 
+enum GroupLevel{
+    BEGINNER,
+    ELEMENTARY,
+    PRE_INTERMEDIATE,
+    INTERMEDIATE,
+    UPPER_INTERMEDIATE,
+    ADVANCED,
+    PROFICIENT
+}
 
 type Response{
     statusCode:Int!
     message:String!
 }
 
-
 type Query {
     getCollection(id: ID!): FullCollection!
     listCollections: [Collection!]
+    getGroups(byId: ID , orderByLevel:Boolean):[Group!]
 }
-
 
 
 type Mutation {
     createCollection(name: String!): Response!
     updateCollection(id: ID!, name: String!): Response!
     deleteCollection(id: ID!): Response!
+    createGroup(name:String! , teacherName:String! , level:GroupLevel!):Response!
+    updateGroup(id:ID! , name:String! , teacherName:String! , level:GroupLevel!):Response!
+    deleteGroup(id:ID!):Response!
+    createTest(collectionId:ID!, questions:[TestQuestion!]):Response!
+    createQuestion(collectionId:ID! , questionField:String!):Response!
+    createAnswer(questionId:ID! , answer:AnswerInput!):Response!
+    deleteQuestion(questionId:ID!):Response!
+    deleteAnswer(answerId:ID!):Response!
+}
+
+input TestQuestion {
+    questionField: String!
+    answers: [AnswerInput!]!
+}
+
+input AnswerInput {
+    isTrue: Boolean!
+    answerField: String!
 }

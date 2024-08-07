@@ -8,12 +8,10 @@ import (
 	"time"
 )
 
-// CollectionRepository handles operations related to the Collection model.
 type CollectionRepository struct {
 	db *sql.DB
 }
 
-// NewCollectionRepository creates a new CollectionRepository.
 func NewCollectionRepository(db *sql.DB) *CollectionRepository {
 	return &CollectionRepository{db: db}
 }
@@ -103,10 +101,9 @@ func (r *CollectionRepository) Get(id int) (*model.FullCollection, error) {
 	return fullCollection, nil
 }
 
-// Update updates an existing collection in the database.
 func (r *CollectionRepository) Update(collection *model.Collection) error {
 	_, err := r.db.Exec("UPDATE collections SET name = ?, updated_at = ? WHERE id = ?",
-		collection.Name, collection.UpdatedAt, collection.ID)
+		collection.Name, time.Now(), collection.ID)
 	if err != nil {
 		log.Printf("Error updating collection: %v", err)
 		return err
@@ -114,7 +111,6 @@ func (r *CollectionRepository) Update(collection *model.Collection) error {
 	return nil
 }
 
-// Delete removes a collection from the database.
 func (r *CollectionRepository) Delete(id int) error {
 	_, err := r.db.Exec("DELETE FROM collections WHERE id = ?", id)
 	if err != nil {
@@ -122,4 +118,22 @@ func (r *CollectionRepository) Delete(id int) error {
 		return err
 	}
 	return nil
+}
+
+func (r *CollectionRepository) GetCollections() ([]*model.Collection, error) {
+	rows, err := r.db.Query(`SELECT id, name, created_at, updated_at FROM collections`)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var collections []*model.Collection
+	for rows.Next() {
+		var collect model.Collection
+		err = rows.Scan(&collect.ID, &collect.Name, &collect.CreatedAt, &collect.UpdatedAt)
+		if err != nil {
+			return nil, err
+		}
+		collections = append(collections, &collect)
+	}
+	return collections, nil
 }

@@ -25,15 +25,15 @@ VALUES ('Collection A'),
 
 INSERT INTO questions (question_field, collection_id)
 VALUES ('What is 2 + 2?', 1),
-       ('What is the capital of France?', 2),
-       ('What is the boiling point of water?', 3),
-       ('Who wrote "To Kill a Mockingbird"?', 4),
-       ('What is the largest planet in our solar system?', 5),
-       ('What is the chemical symbol for gold?', 6),
-       ('What is the speed of light?', 7),
-       ('Who painted the Mona Lisa?', 8),
-       ('What is the hardest natural substance on Earth?', 9),
-       ('What is the currency of Japan?', 10);
+       ('What is the capital of France?', 1),
+       ('What is the boiling point of water?', 1),
+       ('Who wrote "To Kill a Mockingbird"?', 1),
+       ('What is the largest planet in our solar system?', 1),
+       ('What is the chemical symbol for gold?', 1),
+       ('What is the speed of light?', 1),
+       ('Who painted the Mona Lisa?', 1),
+       ('What is the hardest natural substance on Earth?', 1),
+       ('What is the currency of Japan?', 1);
 
 INSERT INTO answers (is_true, question_id, answer_field)
 VALUES (TRUE, 1, 'two chewing gums'),
@@ -53,11 +53,11 @@ VALUES (TRUE, 1, 'two chewing gums'),
 INSERT INTO groups (name, teacher_name, level)
 VALUES ('Group 1', 'Mr. Adams', 'BEGINNER'),
        ('Group 2', 'Ms. Brown', 'ELEMENTARY'),
-       ('Group 3', 'Mr. Clark', 'PRE INTERMEDIATE'),
+       ('Group 3', 'Mr. Clark', 'PRE_INTERMEDIATE'),
        ('Group 4', 'Ms. Davis', 'INTERMEDIATE'),
-       ('Group 5', 'Mr. Evans', 'UPPER INTERMEDIATE'),
+       ('Group 5', 'Mr. Evans', 'UPPER_INTERMEDIATE'),
        ('Group 6', 'Ms. Foster', 'ADVANCED'),
        ('Group 7', 'Mr. Gray', 'PROFICIENT'),
        ('Group 8', 'Ms. Harris', 'BEGINNER'),
        ('Group 9', 'Mr. Ives', 'ELEMENTARY'),
-       ('Group 10', 'Ms. Jones', 'PRE INTERMEDIATE');
+       ('Group 10', 'Ms. Jones', 'PRE_INTERMEDIATE');

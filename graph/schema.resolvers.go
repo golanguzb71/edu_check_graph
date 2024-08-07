@@ -35,6 +35,62 @@ func (r *mutationResolver) DeleteCollection(ctx context.Context, id string) (*mo
 	return utils.AbsResponseChecking(err, "deleted")
 }
 
+// CreateGroup is the resolver for the createGroup field.
+func (r *mutationResolver) CreateGroup(ctx context.Context, name string, teacherName string, level model.GroupLevel) (*model.Response, error) {
+	var group model.Group
+	group.Name = name
+	group.TeacherName = teacherName
+	group.Level = level.String()
+	err := r.GroupService.CreateGroup(&group)
+	return utils.AbsResponseChecking(err, "created")
+}
+
+// UpdateGroup is the resolver for the updateGroup field.
+func (r *mutationResolver) UpdateGroup(ctx context.Context, id string, name string, teacherName string, level model.GroupLevel) (*model.Response, error) {
+	var group model.Group
+	group.ID = id
+	group.Name = name
+	group.TeacherName = teacherName
+	group.Level = level.String()
+	err := r.GroupService.UpdateGroup(&group)
+	return utils.AbsResponseChecking(err, "updated")
+}
+
+// DeleteGroup is the resolver for the deleteGroup field.
+func (r *mutationResolver) DeleteGroup(ctx context.Context, id string) (*model.Response, error) {
+	realId, err := strconv.Atoi(id)
+	if err != nil {
+		return nil, err
+	}
+	err = r.GroupService.DeleteGroup(realId)
+	return utils.AbsResponseChecking(err, "deleted")
+}
+
+// CreateTest is the resolver for the createTest field.
+func (r *mutationResolver) CreateTest(ctx context.Context, collectionID string, questions []*model.TestQuestion) (*model.Response, error) {
+	panic(fmt.Errorf("not implemented: CreateTest - createTest"))
+}
+
+// CreateQuestion is the resolver for the createQuestion field.
+func (r *mutationResolver) CreateQuestion(ctx context.Context, collectionID string, questionField string) (*model.Response, error) {
+	panic(fmt.Errorf("not implemented: CreateQuestion - createQuestion"))
+}
+
+// CreateAnswer is the resolver for the createAnswer field.
+func (r *mutationResolver) CreateAnswer(ctx context.Context, questionID string, answer model.AnswerInput) (*model.Response, error) {
+	panic(fmt.Errorf("not implemented: CreateAnswer - createAnswer"))
+}
+
+// DeleteQuestion is the resolver for the deleteQuestion field.
+func (r *mutationResolver) DeleteQuestion(ctx context.Context, questionID string) (*model.Response, error) {
+	panic(fmt.Errorf("not implemented: DeleteQuestion - deleteQuestion"))
+}
+
+// DeleteAnswer is the resolver for the deleteAnswer field.
+func (r *mutationResolver) DeleteAnswer(ctx context.Context, answerID string) (*model.Response, error) {
+	panic(fmt.Errorf("not implemented: DeleteAnswer - deleteAnswer"))
+}
+
 // GetCollection is the resolver for the getCollection field.
 func (r *queryResolver) GetCollection(ctx context.Context, id string) (*model.FullCollection, error) {
 	realId, err := strconv.Atoi(id)
@@ -50,7 +106,16 @@ func (r *queryResolver) GetCollection(ctx context.Context, id string) (*model.Fu
 
 // ListCollections is the resolver for the listCollections field.
 func (r *queryResolver) ListCollections(ctx context.Context) ([]*model.Collection, error) {
-	panic(fmt.Errorf("not implemented: ListCollections - listCollections"))
+	return r.CollectionService.GetCollections()
+}
+
+// GetGroups is the resolver for the getGroups field.
+func (r *queryResolver) GetGroups(ctx context.Context, byID *string, orderByLevel *bool) ([]*model.Group, error) {
+	group, err := r.GroupService.GetGroup(byID, orderByLevel)
+	if err != nil {
+		return nil, err
+	}
+	return group, nil
 }
 
 // Mutation returns MutationResolver implementation.

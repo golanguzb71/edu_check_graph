@@ -3,6 +3,7 @@ package service
 import (
 	"edu_test_graph/graph/model"
 	"edu_test_graph/internal/repository"
+	"strconv"
 )
 
 type CollectionService struct {
@@ -22,9 +23,17 @@ func (s *CollectionService) GetCollection(id int) (*model.FullCollection, error)
 }
 
 func (s *CollectionService) UpdateCollection(m *model.Collection) error {
-	return nil
+	return s.repo.Update(m)
 }
 
 func (s *CollectionService) DeleteCollection(id string) error {
-	return nil
+	realId, err := strconv.Atoi(id)
+	if err != nil {
+		return err
+	}
+	return s.repo.Delete(realId)
+}
+
+func (s *CollectionService) GetCollections() ([]*model.Collection, error) {
+	return s.repo.GetCollections()
 }
