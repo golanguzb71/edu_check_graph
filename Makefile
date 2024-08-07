@@ -4,7 +4,7 @@ include .env
 
 
 run:
-	go run main.go
+	go run cmd/main.go
 
 migrate-up:
 	PGPASSWORD=$(POSTGRES_PASSWORD) psql -U $(POSTGRES_USER) -d $(POSTGRES_DATABASE) -h $(POSTGRES_HOST) -p $(POSTGRES_PORT) -f migrations/up.sql
