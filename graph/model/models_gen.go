@@ -2,5 +2,66 @@
 
 package model
 
+type Answer struct {
+	ID          string `json:"id"`
+	IsTrue      bool   `json:"isTrue"`
+	QuestionID  string `json:"questionID"`
+	AnswerField string `json:"answerField"`
+	CreatedAt   string `json:"createdAt"`
+	UpdatedAt   string `json:"updatedAt"`
+}
+
+type Collection struct {
+	ID        string `json:"id"`
+	Name      string `json:"name"`
+	CreatedAt string `json:"createdAt"`
+	UpdatedAt string `json:"updatedAt"`
+}
+
+type FullCollection struct {
+	Collection *Collection     `json:"collection"`
+	Questions  []*FullQuestion `json:"questions,omitempty"`
+}
+
+type FullQuestion struct {
+	ID            string    `json:"id"`
+	QuestionField string    `json:"questionField"`
+	CreatedAt     string    `json:"createdAt"`
+	Answers       []*Answer `json:"answers,omitempty"`
+}
+
+type Group struct {
+	ID          string `json:"id"`
+	Name        string `json:"name"`
+	TeacherName string `json:"teacherName"`
+	Level       string `json:"level"`
+	CreatedAt   string `json:"createdAt"`
+	UpdatedAt   string `json:"updatedAt"`
+}
+
+type Mutation struct {
+}
+
 type Query struct {
+}
+
+type Question struct {
+	ID            string `json:"id"`
+	QuestionField string `json:"questionField"`
+	CollectionID  string `json:"collectionID"`
+	CreatedAt     string `json:"createdAt"`
+	UpdatedAt     string `json:"updatedAt"`
+}
+
+type Response struct {
+	StatusCode int    `json:"statusCode"`
+	Message    string `json:"message"`
+}
+
+type Student struct {
+	ID          string `json:"id"`
+	PhoneNumber string `json:"phoneNumber"`
+	FullName    string `json:"fullName"`
+	CreatedAt   string `json:"createdAt"`
+	UpdatedAt   string `json:"updatedAt"`
 }

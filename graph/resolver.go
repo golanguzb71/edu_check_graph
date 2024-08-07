@@ -1,7 +1,11 @@
 package graph
 
-// This file will not be regenerated automatically.
-//
-// It serves as dependency injection for your app, add any dependencies you require here.
+import "edu_test_graph/internal/service"
 
-type Resolver struct{}
+type Resolver struct {
+	GroupService      *service.GroupService
+	AnswerService     *service.AnswerService
+	CollectionService *service.CollectionService
+	StudentService    *service.StudentService
+	QuestionService   *service.QuestionService
+}

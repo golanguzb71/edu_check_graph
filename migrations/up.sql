@@ -1,87 +1,46 @@
-CREATE TABLE students
+CREATE TABLE IF NOT EXISTS students
 (
-    id           bigserial primary key,
-    phone_number varchar NOT NULL,
-    full_name    varchar NOT NULL,
-    created_at   timestamp DEFAULT NOW(),
-    updated_at   timestamp DEFAULT NOW()
+    id           INTEGER PRIMARY KEY AUTOINCREMENT,
+    phone_number VARCHAR NOT NULL,
+    full_name    VARCHAR NOT NULL,
+    created_at   TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at   TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
-CREATE TABLE collections
+CREATE TABLE IF NOT EXISTS collections
 (
-    id         bigserial primary key,
-    name       varchar NOT NULL,
-    created_at timestamp DEFAULT NOW(),
-    updated_at timestamp DEFAULT NOW()
+    id         INTEGER PRIMARY KEY AUTOINCREMENT,
+    name       VARCHAR NOT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
-
-CREATE TABLE questions
+CREATE TABLE IF NOT EXISTS questions
 (
-    id             bigserial primary key,
-    question_field text                               NOT NULL,
-    collection_id  bigint references collections (id) NOT NULL,
-    created_at     timestamp DEFAULT NOW(),
-    updated_at     timestamp DEFAULT NOW()
+    id             INTEGER PRIMARY KEY AUTOINCREMENT,
+    question_field TEXT                                NOT NULL,
+    collection_id  INTEGER REFERENCES collections (id) NOT NULL,
+    created_at     TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at     TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
-
-CREATE TABLE answers
+CREATE TABLE IF NOT EXISTS answers
 (
-    id           bigserial primary key,
-    is_true      boolean                          NOT NULL,
-    question_id  bigint references questions (id) NOT NULL,
-    answer_field text                             NOT NULL,
-    created_at   timestamp DEFAULT NOW(),
-    updated_at   timestamp DEFAULT NOW()
+    id           INTEGER PRIMARY KEY AUTOINCREMENT,
+    is_true      BOOLEAN                           NOT NULL,
+    question_id  INTEGER REFERENCES questions (id) NOT NULL,
+    answer_field TEXT                              NOT NULL,
+    created_at   TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at   TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
-CREATE TABLE groups
+CREATE TABLE IF NOT EXISTS groups
 (
-    id           bigserial primary key,
-    name         varchar NOT NULL,
-    teacher_name varchar Not Null,
-    level        varchar NOT NULL check ( level in ('BEGINNER', 'ELEMENTARY', 'PRE INTERMEDIATE', 'INTERMEDIATE',
-                                                    'UPPER INTERMEDIATE', 'ADVANCED', 'PROFICIENT')),
-    created_at   timestamp DEFAULT NOW(),
-    updated_at   timestamp DEFAULT NOW()
+    id           INTEGER PRIMARY KEY AUTOINCREMENT,
+    name         VARCHAR NOT NULL,
+    teacher_name VARCHAR NOT NULL,
+    level        VARCHAR NOT NULL CHECK (level IN ('BEGINNER', 'ELEMENTARY', 'PRE INTERMEDIATE', 'INTERMEDIATE',
+                                                   'UPPER INTERMEDIATE', 'ADVANCED', 'PROFICIENT')),
+    created_at   TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at   TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
-
-CREATE OR REPLACE FUNCTION update_updated_at_column()
-    RETURNS TRIGGER AS
-$$
-BEGIN
-    NEW.updated_at = NOW();
-    RETURN NEW;
-END;
-$$ LANGUAGE plpgsql;
-
-CREATE TRIGGER set_timestamp
-    BEFORE UPDATE
-    ON students
-    FOR EACH ROW
-EXECUTE FUNCTION update_updated_at_column();
-
-CREATE TRIGGER set_timestamp
-    BEFORE UPDATE
-    ON collections
-    FOR EACH ROW
-EXECUTE FUNCTION update_updated_at_column();
-
-CREATE TRIGGER set_timestamp
-    BEFORE UPDATE
-    ON questions
-    FOR EACH ROW
-EXECUTE FUNCTION update_updated_at_column();
-
-CREATE TRIGGER set_timestamp
-    BEFORE UPDATE
-    ON answers
-    FOR EACH ROW
-EXECUTE FUNCTION update_updated_at_column();
-
-CREATE TRIGGER set_timestamp
-    BEFORE UPDATE
-    ON groups
-    FOR EACH ROW
-EXECUTE FUNCTION update_updated_at_column();

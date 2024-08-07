@@ -1,0 +1,72 @@
+type FullCollection{
+    collection:Collection!
+    questions:[FullQuestion!]
+}
+
+type FullQuestion{
+    id: ID!
+    questionField: String!
+    createdAt: String!
+    answers:[Answer!]
+}
+
+type Student {
+    id: ID!
+    phoneNumber: String!
+    fullName: String!
+    createdAt: String! # Use String for date-time in GraphQL
+    updatedAt: String! # Use String for date-time in GraphQL
+}
+
+type Collection {
+    id: ID!
+    name: String!
+    createdAt: String! # Use String for date-time in GraphQL
+    updatedAt: String! # Use String for date-time in GraphQL
+}
+
+type Question {
+    id: ID!
+    questionField: String!
+    collectionID: ID!
+    createdAt: String! # Use String for date-time in GraphQL
+    updatedAt: String! # Use String for date-time in GraphQL
+}
+
+type Answer {
+    id: ID!
+    isTrue: Boolean!
+    questionID: ID!
+    answerField: String!
+    createdAt: String! # Use String for date-time in GraphQL
+    updatedAt: String! # Use String for date-time in GraphQL
+}
+
+type Group {
+    id: ID!
+    name: String!
+    teacherName: String!
+    level: String!
+    createdAt: String! # Use String for date-time in GraphQL
+    updatedAt: String! # Use String for date-time in GraphQL
+}
+
+
+type Response{
+    statusCode:Int!
+    message:String!
+}
+
+
+type Query {
+    getCollection(id: ID!): FullCollection!
+    listCollections: [Collection!]
+}
+
+
+
+type Mutation {
+    createCollection(name: String!): Response!
+    updateCollection(id: ID!, name: String!): Response!
+    deleteCollection(id: ID!): Response!
+}
