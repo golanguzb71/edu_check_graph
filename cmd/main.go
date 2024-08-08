@@ -6,6 +6,7 @@ import (
 	"edu_test_graph/internal/config"
 	"edu_test_graph/internal/repository"
 	"edu_test_graph/internal/service"
+	"fmt"
 	"github.com/gorilla/handlers"
 	"log"
 	"net/http"
@@ -23,6 +24,7 @@ import (
 func main() {
 	loadEnv()
 	port := os.Getenv("PORT")
+	fmt.Println(port)
 	database.Connect()
 	db := database.DB
 	groupRepo := repository.NewGroupRepository(db)
