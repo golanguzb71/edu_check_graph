@@ -8,7 +8,6 @@ import (
 	"context"
 	"edu_test_graph/graph/model"
 	utils "edu_test_graph/internal"
-	"fmt"
 	"strconv"
 )
 
@@ -68,27 +67,47 @@ func (r *mutationResolver) DeleteGroup(ctx context.Context, id string) (*model.R
 
 // CreateTest is the resolver for the createTest field.
 func (r *mutationResolver) CreateTest(ctx context.Context, collectionID string, questions []*model.TestQuestion) (*model.Response, error) {
-	panic(fmt.Errorf("not implemented: CreateTest - createTest"))
+	err := r.QuestionService.CreateTest(ctx, collectionID, questions)
+	return utils.AbsResponseChecking(err, "test created and linked to this collection.")
 }
 
 // CreateQuestion is the resolver for the createQuestion field.
 func (r *mutationResolver) CreateQuestion(ctx context.Context, collectionID string, questionField string) (*model.Response, error) {
-	panic(fmt.Errorf("not implemented: CreateQuestion - createQuestion"))
+	var question model.Question
+	question.QuestionField = questionField
+	question.CollectionID = collectionID
+	err := r.QuestionService.CreateQuestion(&question)
+	return utils.AbsResponseChecking(err, "created and linked to "+collectionID)
 }
 
 // CreateAnswer is the resolver for the createAnswer field.
 func (r *mutationResolver) CreateAnswer(ctx context.Context, questionID string, answer model.AnswerInput) (*model.Response, error) {
-	panic(fmt.Errorf("not implemented: CreateAnswer - createAnswer"))
+	var answerModel model.Answer
+	answerModel.AnswerField = answer.AnswerField
+	answerModel.IsTrue = answer.IsTrue
+	answerModel.QuestionID = questionID
+	err := r.AnswerService.CreateAnswer(&answerModel)
+	return utils.AbsResponseChecking(err, "created and linked to "+questionID)
 }
 
 // DeleteQuestion is the resolver for the deleteQuestion field.
 func (r *mutationResolver) DeleteQuestion(ctx context.Context, questionID string) (*model.Response, error) {
-	panic(fmt.Errorf("not implemented: DeleteQuestion - deleteQuestion"))
+	realId, err := strconv.Atoi(questionID)
+	if err != nil {
+		return nil, err
+	}
+	err = r.QuestionService.DeleteQuestion(realId)
+	return utils.AbsResponseChecking(err, "deleted")
 }
 
 // DeleteAnswer is the resolver for the deleteAnswer field.
 func (r *mutationResolver) DeleteAnswer(ctx context.Context, answerID string) (*model.Response, error) {
-	panic(fmt.Errorf("not implemented: DeleteAnswer - deleteAnswer"))
+	realId, err := strconv.Atoi(answerID)
+	if err != nil {
+		return nil, err
+	}
+	err = r.AnswerService.DeleteAnswer(realId)
+	return utils.AbsResponseChecking(err, "deleted")
 }
 
 // GetCollection is the resolver for the getCollection field.

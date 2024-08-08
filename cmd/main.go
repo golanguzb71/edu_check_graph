@@ -23,10 +23,8 @@ import (
 func main() {
 	loadEnv()
 	port := os.Getenv("PORT")
-
-	config.LoadDB()
-	db := config.DB
-
+	database.Connect()
+	db := database.DB
 	groupRepo := repository.NewGroupRepository(db)
 	answerRepo := repository.NewAnswerRepository(db)
 	collectionRepo := repository.NewCollectionRepository(db)

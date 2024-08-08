@@ -23,4 +23,6 @@ func (s *AnswerService) GetAnswer(id int) (*model.Answer, error) {
 	return s.repo.Get(id)
 }
 
-// Define other methods as needed
+func (s *AnswerService) DeleteAnswer(id int) error {
+	return s.repo.Delete(id)
+}

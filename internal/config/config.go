@@ -1,29 +1,29 @@
-package config
+package database
 
 import (
 	"database/sql"
-	_ "github.com/mattn/go-sqlite3"
+	"fmt"
 	"log"
+	"os"
+
+	_ "github.com/lib/pq"
 )
 
 var DB *sql.DB
 
-func InitDB(dsn string) (*sql.DB, error) {
-	db, err := sql.Open("sqlite3", dsn)
-	if err != nil {
-		return nil, err
-	}
+func Connect() {
+	connStr := fmt.Sprintf("user=%s password=%s dbname=%s sslmode=disable host=%s port=%s",
+		os.Getenv("POSTGRES_USER"),
+		os.Getenv("POSTGRES_PASSWORD"),
+		os.Getenv("POSTGRES_DATABASE"),
+		os.Getenv("POSTGRES_HOST"),
+		os.Getenv("POSTGRES_PORT"),
+	)
 
-	if err := db.Ping(); err != nil {
-		return nil, err
-	}
-	return db, nil
-}
-
-func LoadDB() {
 	var err error
-	DB, err = InitDB("edu.db")
+	DB, err = sql.Open("postgres", connStr)
 	if err != nil {
-		log.Fatal("Failed to initialize database:", err)
+		log.Fatal("Error opening database connection: ", err)
 	}
+	fmt.Println("Database connection successful")
 }

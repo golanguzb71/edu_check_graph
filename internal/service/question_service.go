@@ -1,6 +1,7 @@
 package service
 
 import (
+	"context"
 	"edu_test_graph/graph/model"
 	"edu_test_graph/internal/repository"
 )
@@ -14,7 +15,6 @@ func NewQuestionService(repo *repository.QuestionRepository) *QuestionService {
 }
 
 func (s *QuestionService) CreateQuestion(question *model.Question) error {
-	// Business logic for creating a question
 	return s.repo.Create(question)
 }
 
@@ -23,4 +23,10 @@ func (s *QuestionService) GetQuestion(id int) (*model.Question, error) {
 	return s.repo.Get(id)
 }
 
-// Define other methods as needed
+func (s *QuestionService) CreateTest(ctx context.Context, id string, questions []*model.TestQuestion) error {
+	return s.repo.CreateTest(ctx, id, questions)
+}
+
+func (s *QuestionService) DeleteQuestion(id int) error {
+	return s.repo.Delete(id)
+}

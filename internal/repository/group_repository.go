@@ -18,7 +18,7 @@ func NewGroupRepository(db *sql.DB) *GroupRepository {
 
 // Create inserts a new group into the database.
 func (r *GroupRepository) Create(group *model.Group) error {
-	_, err := r.db.Exec("INSERT INTO groups (name, teacher_name, level) VALUES (?, ?, ?)",
+	_, err := r.db.Exec("INSERT INTO groups (name, teacher_name, level) VALUES ($1, $2, $3)",
 		group.Name, group.TeacherName, group.Level)
 	if err != nil {
 		log.Printf("Error inserting group: %v", err)
@@ -34,7 +34,7 @@ func (r *GroupRepository) Get(id *string, orderLevel *bool) ([]*model.Group, err
 	)
 
 	if id != nil {
-		sql := `SELECT id, name, teacher_name, level, created_at, updated_at FROM groups WHERE id = ?`
+		sql := `SELECT id, name, teacher_name, level, created_at, updated_at FROM groups WHERE id = $1`
 		rows, err = r.db.Query(sql, id)
 	} else {
 		sql := `SELECT id, name, teacher_name, level, created_at, updated_at FROM groups`
@@ -85,7 +85,7 @@ func (r *GroupRepository) Get(id *string, orderLevel *bool) ([]*model.Group, err
 }
 
 func (r *GroupRepository) Update(group *model.Group) error {
-	_, err := r.db.Exec("UPDATE groups SET name = ?, teacher_name = ?, level = ?, updated_at = ? WHERE id = ?",
+	_, err := r.db.Exec("UPDATE groups SET name = $1, teacher_name = $2, level = $3, updated_at = $4 WHERE id = $5",
 		group.Name, group.TeacherName, group.Level, time.Now(), group.ID)
 	if err != nil {
 		log.Printf("Error updating group: %v", err)
@@ -96,7 +96,7 @@ func (r *GroupRepository) Update(group *model.Group) error {
 
 // Delete removes a group from the database.
 func (r *GroupRepository) Delete(id int) error {
-	_, err := r.db.Exec("DELETE FROM groups WHERE id = ?", id)
+	_, err := r.db.Exec("DELETE FROM groups WHERE id = $1", id)
 	if err != nil {
 		log.Printf("Error deleting group: %v", err)
 		return err

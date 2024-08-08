@@ -15,7 +15,7 @@ func NewStudentRepository(db *sql.DB) *StudentRepository {
 }
 
 func (r *StudentRepository) Create(student *model.Student) error {
-	_, err := r.db.Exec("INSERT INTO students (phone_number, full_name) VALUES (?, ?)",
+	_, err := r.db.Exec("INSERT INTO students (phone_number, full_name) VALUES ($1, $2)",
 		student.PhoneNumber, student.FullName)
 	if err != nil {
 		log.Printf("Error inserting student: %v", err)
@@ -25,7 +25,7 @@ func (r *StudentRepository) Create(student *model.Student) error {
 }
 
 func (r *StudentRepository) Get(id int) (*model.Student, error) {
-	row := r.db.QueryRow("SELECT id, phone_number, full_name, created_at, updated_at FROM students WHERE id = ?", id)
+	row := r.db.QueryRow("SELECT id, phone_number, full_name, created_at, updated_at FROM students WHERE id = $1", id)
 	student := &model.Student{}
 	err := row.Scan(&student.ID, &student.PhoneNumber, &student.FullName, &student.CreatedAt, &student.UpdatedAt)
 	if err != nil {
@@ -36,7 +36,7 @@ func (r *StudentRepository) Get(id int) (*model.Student, error) {
 }
 
 func (r *StudentRepository) Update(student *model.Student) error {
-	_, err := r.db.Exec("UPDATE students SET phone_number = ?, full_name = ?, updated_at = ? WHERE id = ?",
+	_, err := r.db.Exec("UPDATE students SET phone_number = $1, full_name = $2, updated_at = $3 WHERE id = $4",
 		student.PhoneNumber, student.FullName, student.UpdatedAt, student.ID)
 	if err != nil {
 		log.Printf("Error updating student: %v", err)
@@ -46,7 +46,7 @@ func (r *StudentRepository) Update(student *model.Student) error {
 }
 
 func (r *StudentRepository) Delete(id int) error {
-	_, err := r.db.Exec("DELETE FROM students WHERE id = ?", id)
+	_, err := r.db.Exec("DELETE FROM students WHERE id = $1", id)
 	if err != nil {
 		log.Printf("Error deleting student: %v", err)
 		return err
