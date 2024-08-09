@@ -68,11 +68,11 @@ func (r *AnswerRepository) collectionExists(collectionID string) (bool, error) {
 	return exists, nil
 }
 
-func (r *AnswerRepository) CreateInsertAnswer(answers model.AnswerInsert) error {
+func (r *AnswerRepository) CreateInsertAnswer(answers model.AnswerInsert) (*model.CommonResponse, error) {
 	key := answers.Key
 	resp, err := utils.SearchByValue(database.RDB, key)
 	if err != nil {
-		return errors.New("not allowed; please insert a valid key: https://t.me/codevanbot")
+		return &model.CommonResponse{}, errors.New("not allowed; please insert a valid key: https://t.me/codevanbot")
 	}
 	userId := resp.UserID
 	collectionID := answers.CollectionID
@@ -81,36 +81,90 @@ func (r *AnswerRepository) CreateInsertAnswer(answers model.AnswerInsert) error 
 
 	exists, err := r.collectionExists(collectionID)
 	if err != nil {
-		return err
+		return &model.CommonResponse{}, err
 	}
 	if !exists {
-		return fmt.Errorf("collection ID %d does not exist", collectionID)
+		return &model.CommonResponse{}, fmt.Errorf("collection ID %d does not exist", collectionID)
 	}
 
 	var creatingModuleSql = `INSERT INTO student_collection(student_id, collection_id) VALUES ($1, $2) RETURNING id`
 	var id int64
 	err = r.db.QueryRow(creatingModuleSql, userId, collectionID).Scan(&id)
 	if err != nil {
-		return fmt.Errorf("failed to insert into student_collection: %v", err)
+		return &model.CommonResponse{}, fmt.Errorf("failed to insert into student_collection: %v", err)
 	}
 
+	var result []*model.ResponseAfterTesting
+	var TAC = 0
 	for _, el := range answers.Answers {
 		checker := `SELECT EXISTS(SELECT 1 FROM answers WHERE id=$1 and question_id=$2)`
 		var checking bool
 		_ = r.db.QueryRow(checker, el.AnswerID, el.QuestionID).Scan(&checking)
 		if !checking {
-			return errors.New("not allowed answer_id not match with question_id")
+			return &model.CommonResponse{},
+				errors.New("not allowed answer_id not match with question_id")
 		}
-		err = r.db.QueryRow(`SELECT is_true FROM answers where id=$1`, el.AnswerID).Scan(&checker)
+		err = r.db.QueryRow(`SELECT is_true FROM answers where id=$1`, el.AnswerID).Scan(&checking)
 		if err != nil {
-			return err
+			return &model.CommonResponse{}, err
 		}
-
+		if checking {
+			TAC += 1
+		}
+		var PR model.ResponseAfterTesting
+		PR.IsTrue = checking
+		_ = r.db.QueryRow("SELECT question_field FROM questions where id=$1", el.QuestionID).Scan(&PR.QuestionField)
+		_ = r.db.QueryRow("SELECT answer_field FROM answers where id=$1", el.AnswerID).Scan(&PR.GivenAnswerField)
+		_ = r.db.QueryRow("SELECT answer_field FROM answers where is_true=true and question_id=$1", el.QuestionID).Scan(&PR.TrueAnswerField)
 		var creatingStudentAnswerSql = `INSERT INTO student_answer(student_collection_id, question_id, answer_id , is_true) VALUES ($1 , $2 , $3 , $4)`
-		_, err = r.db.Exec(creatingStudentAnswerSql, id, el.QuestionID, el.AnswerID, checker)
+		_, err = r.db.Exec(creatingStudentAnswerSql, id, el.QuestionID, el.AnswerID, checking)
 		if err != nil {
-			return err
+			return &model.CommonResponse{}, err
 		}
+		result = append(result, &PR)
 	}
-	return nil
+	var CQC int
+	var query = `SELECT COUNT(id)
+	FROM questions
+	where collection_id = $1`
+	_ = r.db.QueryRow(query, collectionID).Scan(&CQC)
+	return makingResponse(result, CQC, TAC)
+}
+
+func makingResponse(result []*model.ResponseAfterTesting, commonQuestionCount, trueAnswerCount int) (*model.CommonResponse, error) {
+	res := &model.CommonResponse{}
+	res.Answers = result
+	pureProportion := trueAnswerCount * 100 / commonQuestionCount
+	var level string
+
+	switch {
+	case pureProportion >= 0 && pureProportion <= 19:
+		level = "BEGINNER"
+	case pureProportion >= 20 && pureProportion <= 39:
+		level = "ELEMENTARY"
+	case pureProportion >= 40 && pureProportion <= 59:
+		level = "PRE_INTERMEDIATE"
+	case pureProportion >= 60 && pureProportion <= 74:
+		level = "INTERMEDIATE"
+	case pureProportion >= 75 && pureProportion <= 89:
+		level = "UPPER_INTERMEDIATE"
+	case pureProportion >= 90 && pureProportion <= 99:
+		level = "ADVANCED"
+	case pureProportion == 100:
+		level = "PROFICIENT"
+	default:
+		level = "BEGINNER"
+	}
+
+	res.Message = fmt.Sprintf("Siz %d ta savoldan %d tasiga tog'ri javob berdingiz va sizning darajangiz %s deb belgilandi. Sizga Taklif qilinadigan guruhlarimiz hamda ularning o'qituvchilari bilan tanishing", commonQuestionCount, trueAnswerCount, level)
+	rows, _ := database.DB.Query(`SELECT id, name, teacher_name, level, created_at, updated_at FROM groups where level=$1`, level)
+	var groups []*model.Group
+	for rows.Next() {
+		var group model.Group
+		_ = rows.Scan(&group.ID, &group.Name, &group.TeacherName, &group.Level, &group.CreatedAt, &group.UpdatedAt)
+		groups = append(groups, &group)
+	}
+
+	res.RequestGroup = groups
+	return res, nil
 }

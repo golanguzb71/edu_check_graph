@@ -111,9 +111,8 @@ func (r *mutationResolver) DeleteAnswer(ctx context.Context, answerID string) (*
 }
 
 // InsertTestAnswer is the resolver for the insertTestAnswer field.
-func (r *mutationResolver) InsertTestAnswer(ctx context.Context, answers model.AnswerInsert) (*model.Response, error) {
-	err := r.AnswerService.InsertTestAnswer(answers)
-	return utils.AbsResponseChecking(err, "answer uploaded.")
+func (r *mutationResolver) InsertTestAnswer(ctx context.Context, answers model.AnswerInsert) (*model.CommonResponse, error) {
+	return r.AnswerService.InsertTestAnswer(answers)
 }
 
 // GetCollection is the resolver for the getCollection field.

@@ -63,6 +63,12 @@ type ComplexityRoot struct {
 		UpdatedAt func(childComplexity int) int
 	}
 
+	CommonResponse struct {
+		Answers      func(childComplexity int) int
+		Message      func(childComplexity int) int
+		RequestGroup func(childComplexity int) int
+	}
+
 	FullCollection struct {
 		Collection func(childComplexity int) int
 		Questions  func(childComplexity int) int
@@ -118,6 +124,13 @@ type ComplexityRoot struct {
 		StatusCode func(childComplexity int) int
 	}
 
+	ResponseAfterTesting struct {
+		GivenAnswerField func(childComplexity int) int
+		IsTrue           func(childComplexity int) int
+		QuestionField    func(childComplexity int) int
+		TrueAnswerField  func(childComplexity int) int
+	}
+
 	Student struct {
 		CreatedAt   func(childComplexity int) int
 		FullName    func(childComplexity int) int
@@ -139,7 +152,7 @@ type MutationResolver interface {
 	CreateAnswer(ctx context.Context, questionID string, answer model.AnswerInput) (*model.Response, error)
 	DeleteQuestion(ctx context.Context, questionID string) (*model.Response, error)
 	DeleteAnswer(ctx context.Context, answerID string) (*model.Response, error)
-	InsertTestAnswer(ctx context.Context, answers model.AnswerInsert) (*model.Response, error)
+	InsertTestAnswer(ctx context.Context, answers model.AnswerInsert) (*model.CommonResponse, error)
 }
 type QueryResolver interface {
 	GetCollection(ctx context.Context, id string) (*model.FullCollection, error)
@@ -235,6 +248,27 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 		}
 
 		return e.complexity.Collection.UpdatedAt(childComplexity), true
+
+	case "CommonResponse.answers":
+		if e.complexity.CommonResponse.Answers == nil {
+			break
+		}
+
+		return e.complexity.CommonResponse.Answers(childComplexity), true
+
+	case "CommonResponse.message":
+		if e.complexity.CommonResponse.Message == nil {
+			break
+		}
+
+		return e.complexity.CommonResponse.Message(childComplexity), true
+
+	case "CommonResponse.requestGroup":
+		if e.complexity.CommonResponse.RequestGroup == nil {
+			break
+		}
+
+		return e.complexity.CommonResponse.RequestGroup(childComplexity), true
 
 	case "FullCollection.collection":
 		if e.complexity.FullCollection.Collection == nil {
@@ -543,6 +577,34 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 		}
 
 		return e.complexity.Response.StatusCode(childComplexity), true
+
+	case "ResponseAfterTesting.givenAnswerField":
+		if e.complexity.ResponseAfterTesting.GivenAnswerField == nil {
+			break
+		}
+
+		return e.complexity.ResponseAfterTesting.GivenAnswerField(childComplexity), true
+
+	case "ResponseAfterTesting.isTrue":
+		if e.complexity.ResponseAfterTesting.IsTrue == nil {
+			break
+		}
+
+		return e.complexity.ResponseAfterTesting.IsTrue(childComplexity), true
+
+	case "ResponseAfterTesting.questionField":
+		if e.complexity.ResponseAfterTesting.QuestionField == nil {
+			break
+		}
+
+		return e.complexity.ResponseAfterTesting.QuestionField(childComplexity), true
+
+	case "ResponseAfterTesting.trueAnswerField":
+		if e.complexity.ResponseAfterTesting.TrueAnswerField == nil {
+			break
+		}
+
+		return e.complexity.ResponseAfterTesting.TrueAnswerField(childComplexity), true
 
 	case "Student.createdAt":
 		if e.complexity.Student.CreatedAt == nil {
@@ -1495,6 +1557,162 @@ func (ec *executionContext) fieldContext_Collection_updatedAt(_ context.Context,
 		IsResolver: false,
 		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
 			return nil, errors.New("field of type String does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _CommonResponse_requestGroup(ctx context.Context, field graphql.CollectedField, obj *model.CommonResponse) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_CommonResponse_requestGroup(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.RequestGroup, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.([]*model.Group)
+	fc.Result = res
+	return ec.marshalNGroup2ᚕᚖedu_test_graphᚋgraphᚋmodelᚐGroup(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_CommonResponse_requestGroup(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "CommonResponse",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			switch field.Name {
+			case "id":
+				return ec.fieldContext_Group_id(ctx, field)
+			case "name":
+				return ec.fieldContext_Group_name(ctx, field)
+			case "teacherName":
+				return ec.fieldContext_Group_teacherName(ctx, field)
+			case "level":
+				return ec.fieldContext_Group_level(ctx, field)
+			case "createdAt":
+				return ec.fieldContext_Group_createdAt(ctx, field)
+			case "updatedAt":
+				return ec.fieldContext_Group_updatedAt(ctx, field)
+			}
+			return nil, fmt.Errorf("no field named %q was found under type Group", field.Name)
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _CommonResponse_message(ctx context.Context, field graphql.CollectedField, obj *model.CommonResponse) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_CommonResponse_message(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Message, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(string)
+	fc.Result = res
+	return ec.marshalNString2string(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_CommonResponse_message(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "CommonResponse",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type String does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _CommonResponse_answers(ctx context.Context, field graphql.CollectedField, obj *model.CommonResponse) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_CommonResponse_answers(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Answers, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.([]*model.ResponseAfterTesting)
+	fc.Result = res
+	return ec.marshalNResponseAfterTesting2ᚕᚖedu_test_graphᚋgraphᚋmodelᚐResponseAfterTestingᚄ(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_CommonResponse_answers(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "CommonResponse",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			switch field.Name {
+			case "questionField":
+				return ec.fieldContext_ResponseAfterTesting_questionField(ctx, field)
+			case "givenAnswerField":
+				return ec.fieldContext_ResponseAfterTesting_givenAnswerField(ctx, field)
+			case "trueAnswerField":
+				return ec.fieldContext_ResponseAfterTesting_trueAnswerField(ctx, field)
+			case "isTrue":
+				return ec.fieldContext_ResponseAfterTesting_isTrue(ctx, field)
+			}
+			return nil, fmt.Errorf("no field named %q was found under type ResponseAfterTesting", field.Name)
 		},
 	}
 	return fc, nil
@@ -2753,9 +2971,9 @@ func (ec *executionContext) _Mutation_insertTestAnswer(ctx context.Context, fiel
 		}
 		return graphql.Null
 	}
-	res := resTmp.(*model.Response)
+	res := resTmp.(*model.CommonResponse)
 	fc.Result = res
-	return ec.marshalNResponse2ᚖedu_test_graphᚋgraphᚋmodelᚐResponse(ctx, field.Selections, res)
+	return ec.marshalNCommonResponse2ᚖedu_test_graphᚋgraphᚋmodelᚐCommonResponse(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) fieldContext_Mutation_insertTestAnswer(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
@@ -2766,12 +2984,14 @@ func (ec *executionContext) fieldContext_Mutation_insertTestAnswer(ctx context.C
 		IsResolver: true,
 		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
 			switch field.Name {
-			case "statusCode":
-				return ec.fieldContext_Response_statusCode(ctx, field)
+			case "requestGroup":
+				return ec.fieldContext_CommonResponse_requestGroup(ctx, field)
 			case "message":
-				return ec.fieldContext_Response_message(ctx, field)
+				return ec.fieldContext_CommonResponse_message(ctx, field)
+			case "answers":
+				return ec.fieldContext_CommonResponse_answers(ctx, field)
 			}
-			return nil, fmt.Errorf("no field named %q was found under type Response", field.Name)
+			return nil, fmt.Errorf("no field named %q was found under type CommonResponse", field.Name)
 		},
 	}
 	defer func() {
@@ -3398,6 +3618,182 @@ func (ec *executionContext) fieldContext_Response_message(_ context.Context, fie
 		IsResolver: false,
 		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
 			return nil, errors.New("field of type String does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _ResponseAfterTesting_questionField(ctx context.Context, field graphql.CollectedField, obj *model.ResponseAfterTesting) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_ResponseAfterTesting_questionField(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.QuestionField, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(string)
+	fc.Result = res
+	return ec.marshalNString2string(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_ResponseAfterTesting_questionField(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "ResponseAfterTesting",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type String does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _ResponseAfterTesting_givenAnswerField(ctx context.Context, field graphql.CollectedField, obj *model.ResponseAfterTesting) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_ResponseAfterTesting_givenAnswerField(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.GivenAnswerField, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(string)
+	fc.Result = res
+	return ec.marshalNString2string(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_ResponseAfterTesting_givenAnswerField(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "ResponseAfterTesting",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type String does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _ResponseAfterTesting_trueAnswerField(ctx context.Context, field graphql.CollectedField, obj *model.ResponseAfterTesting) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_ResponseAfterTesting_trueAnswerField(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.TrueAnswerField, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(string)
+	fc.Result = res
+	return ec.marshalNString2string(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_ResponseAfterTesting_trueAnswerField(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "ResponseAfterTesting",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type String does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _ResponseAfterTesting_isTrue(ctx context.Context, field graphql.CollectedField, obj *model.ResponseAfterTesting) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_ResponseAfterTesting_isTrue(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.IsTrue, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(bool)
+	fc.Result = res
+	return ec.marshalNBoolean2bool(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_ResponseAfterTesting_isTrue(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "ResponseAfterTesting",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type Boolean does not have child fields")
 		},
 	}
 	return fc, nil
@@ -5665,6 +6061,55 @@ func (ec *executionContext) _Collection(ctx context.Context, sel ast.SelectionSe
 	return out
 }
 
+var commonResponseImplementors = []string{"CommonResponse"}
+
+func (ec *executionContext) _CommonResponse(ctx context.Context, sel ast.SelectionSet, obj *model.CommonResponse) graphql.Marshaler {
+	fields := graphql.CollectFields(ec.OperationContext, sel, commonResponseImplementors)
+
+	out := graphql.NewFieldSet(fields)
+	deferred := make(map[string]*graphql.FieldSet)
+	for i, field := range fields {
+		switch field.Name {
+		case "__typename":
+			out.Values[i] = graphql.MarshalString("CommonResponse")
+		case "requestGroup":
+			out.Values[i] = ec._CommonResponse_requestGroup(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		case "message":
+			out.Values[i] = ec._CommonResponse_message(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		case "answers":
+			out.Values[i] = ec._CommonResponse_answers(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		default:
+			panic("unknown field " + strconv.Quote(field.Name))
+		}
+	}
+	out.Dispatch(ctx)
+	if out.Invalids > 0 {
+		return graphql.Null
+	}
+
+	atomic.AddInt32(&ec.deferred, int32(len(deferred)))
+
+	for label, dfs := range deferred {
+		ec.processDeferredGroup(graphql.DeferredGroup{
+			Label:    label,
+			Path:     graphql.GetPath(ctx),
+			FieldSet: dfs,
+			Context:  ctx,
+		})
+	}
+
+	return out
+}
+
 var fullCollectionImplementors = []string{"FullCollection"}
 
 func (ec *executionContext) _FullCollection(ctx context.Context, sel ast.SelectionSet, obj *model.FullCollection) graphql.Marshaler {
@@ -6134,6 +6579,60 @@ func (ec *executionContext) _Response(ctx context.Context, sel ast.SelectionSet,
 			}
 		case "message":
 			out.Values[i] = ec._Response_message(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		default:
+			panic("unknown field " + strconv.Quote(field.Name))
+		}
+	}
+	out.Dispatch(ctx)
+	if out.Invalids > 0 {
+		return graphql.Null
+	}
+
+	atomic.AddInt32(&ec.deferred, int32(len(deferred)))
+
+	for label, dfs := range deferred {
+		ec.processDeferredGroup(graphql.DeferredGroup{
+			Label:    label,
+			Path:     graphql.GetPath(ctx),
+			FieldSet: dfs,
+			Context:  ctx,
+		})
+	}
+
+	return out
+}
+
+var responseAfterTestingImplementors = []string{"ResponseAfterTesting"}
+
+func (ec *executionContext) _ResponseAfterTesting(ctx context.Context, sel ast.SelectionSet, obj *model.ResponseAfterTesting) graphql.Marshaler {
+	fields := graphql.CollectFields(ec.OperationContext, sel, responseAfterTestingImplementors)
+
+	out := graphql.NewFieldSet(fields)
+	deferred := make(map[string]*graphql.FieldSet)
+	for i, field := range fields {
+		switch field.Name {
+		case "__typename":
+			out.Values[i] = graphql.MarshalString("ResponseAfterTesting")
+		case "questionField":
+			out.Values[i] = ec._ResponseAfterTesting_questionField(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		case "givenAnswerField":
+			out.Values[i] = ec._ResponseAfterTesting_givenAnswerField(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		case "trueAnswerField":
+			out.Values[i] = ec._ResponseAfterTesting_trueAnswerField(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		case "isTrue":
+			out.Values[i] = ec._ResponseAfterTesting_isTrue(ctx, field, obj)
 			if out.Values[i] == graphql.Null {
 				out.Invalids++
 			}
@@ -6634,6 +7133,20 @@ func (ec *executionContext) marshalNCollection2ᚖedu_test_graphᚋgraphᚋmodel
 	return ec._Collection(ctx, sel, v)
 }
 
+func (ec *executionContext) marshalNCommonResponse2edu_test_graphᚋgraphᚋmodelᚐCommonResponse(ctx context.Context, sel ast.SelectionSet, v model.CommonResponse) graphql.Marshaler {
+	return ec._CommonResponse(ctx, sel, &v)
+}
+
+func (ec *executionContext) marshalNCommonResponse2ᚖedu_test_graphᚋgraphᚋmodelᚐCommonResponse(ctx context.Context, sel ast.SelectionSet, v *model.CommonResponse) graphql.Marshaler {
+	if v == nil {
+		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
+			ec.Errorf(ctx, "the requested element is null which the schema does not allow")
+		}
+		return graphql.Null
+	}
+	return ec._CommonResponse(ctx, sel, v)
+}
+
 func (ec *executionContext) marshalNFullCollection2edu_test_graphᚋgraphᚋmodelᚐFullCollection(ctx context.Context, sel ast.SelectionSet, v model.FullCollection) graphql.Marshaler {
 	return ec._FullCollection(ctx, sel, &v)
 }
@@ -6656,6 +7169,44 @@ func (ec *executionContext) marshalNFullQuestion2ᚖedu_test_graphᚋgraphᚋmod
 		return graphql.Null
 	}
 	return ec._FullQuestion(ctx, sel, v)
+}
+
+func (ec *executionContext) marshalNGroup2ᚕᚖedu_test_graphᚋgraphᚋmodelᚐGroup(ctx context.Context, sel ast.SelectionSet, v []*model.Group) graphql.Marshaler {
+	ret := make(graphql.Array, len(v))
+	var wg sync.WaitGroup
+	isLen1 := len(v) == 1
+	if !isLen1 {
+		wg.Add(len(v))
+	}
+	for i := range v {
+		i := i
+		fc := &graphql.FieldContext{
+			Index:  &i,
+			Result: &v[i],
+		}
+		ctx := graphql.WithFieldContext(ctx, fc)
+		f := func(i int) {
+			defer func() {
+				if r := recover(); r != nil {
+					ec.Error(ctx, ec.Recover(ctx, r))
+					ret = nil
+				}
+			}()
+			if !isLen1 {
+				defer wg.Done()
+			}
+			ret[i] = ec.marshalOGroup2ᚖedu_test_graphᚋgraphᚋmodelᚐGroup(ctx, sel, v[i])
+		}
+		if isLen1 {
+			f(i)
+		} else {
+			go f(i)
+		}
+
+	}
+	wg.Wait()
+
+	return ret
 }
 
 func (ec *executionContext) marshalNGroup2ᚖedu_test_graphᚋgraphᚋmodelᚐGroup(ctx context.Context, sel ast.SelectionSet, v *model.Group) graphql.Marshaler {
@@ -6720,6 +7271,60 @@ func (ec *executionContext) marshalNResponse2ᚖedu_test_graphᚋgraphᚋmodel�
 		return graphql.Null
 	}
 	return ec._Response(ctx, sel, v)
+}
+
+func (ec *executionContext) marshalNResponseAfterTesting2ᚕᚖedu_test_graphᚋgraphᚋmodelᚐResponseAfterTestingᚄ(ctx context.Context, sel ast.SelectionSet, v []*model.ResponseAfterTesting) graphql.Marshaler {
+	ret := make(graphql.Array, len(v))
+	var wg sync.WaitGroup
+	isLen1 := len(v) == 1
+	if !isLen1 {
+		wg.Add(len(v))
+	}
+	for i := range v {
+		i := i
+		fc := &graphql.FieldContext{
+			Index:  &i,
+			Result: &v[i],
+		}
+		ctx := graphql.WithFieldContext(ctx, fc)
+		f := func(i int) {
+			defer func() {
+				if r := recover(); r != nil {
+					ec.Error(ctx, ec.Recover(ctx, r))
+					ret = nil
+				}
+			}()
+			if !isLen1 {
+				defer wg.Done()
+			}
+			ret[i] = ec.marshalNResponseAfterTesting2ᚖedu_test_graphᚋgraphᚋmodelᚐResponseAfterTesting(ctx, sel, v[i])
+		}
+		if isLen1 {
+			f(i)
+		} else {
+			go f(i)
+		}
+
+	}
+	wg.Wait()
+
+	for _, e := range ret {
+		if e == graphql.Null {
+			return graphql.Null
+		}
+	}
+
+	return ret
+}
+
+func (ec *executionContext) marshalNResponseAfterTesting2ᚖedu_test_graphᚋgraphᚋmodelᚐResponseAfterTesting(ctx context.Context, sel ast.SelectionSet, v *model.ResponseAfterTesting) graphql.Marshaler {
+	if v == nil {
+		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
+			ec.Errorf(ctx, "the requested element is null which the schema does not allow")
+		}
+		return graphql.Null
+	}
+	return ec._ResponseAfterTesting(ctx, sel, v)
 }
 
 func (ec *executionContext) unmarshalNString2string(ctx context.Context, v interface{}) (string, error) {
@@ -7207,6 +7812,13 @@ func (ec *executionContext) marshalOGroup2ᚕᚖedu_test_graphᚋgraphᚋmodel�
 	}
 
 	return ret
+}
+
+func (ec *executionContext) marshalOGroup2ᚖedu_test_graphᚋgraphᚋmodelᚐGroup(ctx context.Context, sel ast.SelectionSet, v *model.Group) graphql.Marshaler {
+	if v == nil {
+		return graphql.Null
+	}
+	return ec._Group(ctx, sel, v)
 }
 
 func (ec *executionContext) unmarshalOID2ᚖstring(ctx context.Context, v interface{}) (*string, error) {

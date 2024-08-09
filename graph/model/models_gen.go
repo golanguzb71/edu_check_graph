@@ -40,6 +40,12 @@ type Collection struct {
 	UpdatedAt string `json:"updatedAt"`
 }
 
+type CommonResponse struct {
+	RequestGroup []*Group                `json:"requestGroup"`
+	Message      string                  `json:"message"`
+	Answers      []*ResponseAfterTesting `json:"answers"`
+}
+
 type FullCollection struct {
 	Collection *Collection     `json:"collection"`
 	Questions  []*FullQuestion `json:"questions,omitempty"`
@@ -78,6 +84,13 @@ type Question struct {
 type Response struct {
 	StatusCode int    `json:"statusCode"`
 	Message    string `json:"message"`
+}
+
+type ResponseAfterTesting struct {
+	QuestionField    string `json:"questionField"`
+	GivenAnswerField string `json:"givenAnswerField"`
+	TrueAnswerField  string `json:"trueAnswerField"`
+	IsTrue           bool   `json:"isTrue"`
 }
 
 type Student struct {

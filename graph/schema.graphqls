@@ -88,11 +88,20 @@ type Mutation {
     createAnswer(questionId:ID! , answer:AnswerInput!):Response!
     deleteQuestion(questionId:ID!):Response!
     deleteAnswer(answerId:ID!):Response!
-    insertTestAnswer(answers:AnswerInsert!):ResponseAfterTesting!
+    insertTestAnswer(answers:AnswerInsert!): CommonResponse!
+}
+
+type CommonResponse {
+    requestGroup:[Group]!
+    message:String!
+    answers:[ResponseAfterTesting!]!
 }
 
 type ResponseAfterTesting {
-
+    questionField:String!
+    givenAnswerField:String!
+    trueAnswerField:String!
+    isTrue:Boolean!
 }
 
 
