@@ -26,3 +26,7 @@ func (s *AnswerService) GetAnswer(id int) (*model.Answer, error) {
 func (s *AnswerService) DeleteAnswer(id int) error {
 	return s.repo.Delete(id)
 }
+
+func (s *AnswerService) InsertTestAnswer(answers model.AnswerInsert) error {
+	return s.repo.CreateInsertAnswer(answers)
+}

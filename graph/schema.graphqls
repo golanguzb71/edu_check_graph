@@ -88,7 +88,13 @@ type Mutation {
     createAnswer(questionId:ID! , answer:AnswerInput!):Response!
     deleteQuestion(questionId:ID!):Response!
     deleteAnswer(answerId:ID!):Response!
+    insertTestAnswer(answers:AnswerInsert!):ResponseAfterTesting!
 }
+
+type ResponseAfterTesting {
+
+}
+
 
 input TestQuestion {
     questionField: String!
@@ -98,4 +104,13 @@ input TestQuestion {
 input AnswerInput {
     isTrue: Boolean!
     answerField: String!
+}
+input AnswerInsert{
+    collectionId:ID!
+    key:Int!
+    answers:[AnswerHelper!]!
+}
+input AnswerHelper {
+    answerId:ID!
+    questionId:ID!
 }

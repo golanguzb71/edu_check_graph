@@ -110,6 +110,12 @@ func (r *mutationResolver) DeleteAnswer(ctx context.Context, answerID string) (*
 	return utils.AbsResponseChecking(err, "deleted")
 }
 
+// InsertTestAnswer is the resolver for the insertTestAnswer field.
+func (r *mutationResolver) InsertTestAnswer(ctx context.Context, answers model.AnswerInsert) (*model.Response, error) {
+	err := r.AnswerService.InsertTestAnswer(answers)
+	return utils.AbsResponseChecking(err, "answer uploaded.")
+}
+
 // GetCollection is the resolver for the getCollection field.
 func (r *queryResolver) GetCollection(ctx context.Context, id string) (*model.FullCollection, error) {
 	realId, err := strconv.Atoi(id)

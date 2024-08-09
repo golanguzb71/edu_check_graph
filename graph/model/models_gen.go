@@ -17,9 +17,20 @@ type Answer struct {
 	UpdatedAt   string `json:"updatedAt"`
 }
 
+type AnswerHelper struct {
+	AnswerID   string `json:"answerId"`
+	QuestionID string `json:"questionId"`
+}
+
 type AnswerInput struct {
 	IsTrue      bool   `json:"isTrue"`
 	AnswerField string `json:"answerField"`
+}
+
+type AnswerInsert struct {
+	CollectionID string          `json:"collectionId"`
+	Key          int             `json:"key"`
+	Answers      []*AnswerHelper `json:"answers"`
 }
 
 type Collection struct {

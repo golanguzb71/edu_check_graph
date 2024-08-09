@@ -94,6 +94,7 @@ type ComplexityRoot struct {
 		DeleteCollection func(childComplexity int, id string) int
 		DeleteGroup      func(childComplexity int, id string) int
 		DeleteQuestion   func(childComplexity int, questionID string) int
+		InsertTestAnswer func(childComplexity int, answers model.AnswerInsert) int
 		UpdateCollection func(childComplexity int, id string, name string) int
 		UpdateGroup      func(childComplexity int, id string, name string, teacherName string, level model.GroupLevel) int
 	}
@@ -138,6 +139,7 @@ type MutationResolver interface {
 	CreateAnswer(ctx context.Context, questionID string, answer model.AnswerInput) (*model.Response, error)
 	DeleteQuestion(ctx context.Context, questionID string) (*model.Response, error)
 	DeleteAnswer(ctx context.Context, answerID string) (*model.Response, error)
+	InsertTestAnswer(ctx context.Context, answers model.AnswerInsert) (*model.Response, error)
 }
 type QueryResolver interface {
 	GetCollection(ctx context.Context, id string) (*model.FullCollection, error)
@@ -426,6 +428,18 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.Mutation.DeleteQuestion(childComplexity, args["questionId"].(string)), true
 
+	case "Mutation.insertTestAnswer":
+		if e.complexity.Mutation.InsertTestAnswer == nil {
+			break
+		}
+
+		args, err := ec.field_Mutation_insertTestAnswer_args(context.TODO(), rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Mutation.InsertTestAnswer(childComplexity, args["answers"].(model.AnswerInsert)), true
+
 	case "Mutation.updateCollection":
 		if e.complexity.Mutation.UpdateCollection == nil {
 			break
@@ -573,7 +587,9 @@ func (e *executableSchema) Exec(ctx context.Context) graphql.ResponseHandler {
 	rc := graphql.GetOperationContext(ctx)
 	ec := executionContext{rc, e, 0, 0, make(chan graphql.DeferredResult)}
 	inputUnmarshalMap := graphql.BuildUnmarshalerMap(
+		ec.unmarshalInputAnswerHelper,
 		ec.unmarshalInputAnswerInput,
+		ec.unmarshalInputAnswerInsert,
 		ec.unmarshalInputTestQuestion,
 	)
 	first := true
@@ -868,6 +884,21 @@ func (ec *executionContext) field_Mutation_deleteQuestion_args(ctx context.Conte
 		}
 	}
 	args["questionId"] = arg0
+	return args, nil
+}
+
+func (ec *executionContext) field_Mutation_insertTestAnswer_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+	var err error
+	args := map[string]interface{}{}
+	var arg0 model.AnswerInsert
+	if tmp, ok := rawArgs["answers"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("answers"))
+		arg0, err = ec.unmarshalNAnswerInsert2edu_test_graphᚋgraphᚋmodelᚐAnswerInsert(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["answers"] = arg0
 	return args, nil
 }
 
@@ -2690,6 +2721,67 @@ func (ec *executionContext) fieldContext_Mutation_deleteAnswer(ctx context.Conte
 	}()
 	ctx = graphql.WithFieldContext(ctx, fc)
 	if fc.Args, err = ec.field_Mutation_deleteAnswer_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
+		ec.Error(ctx, err)
+		return fc, err
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _Mutation_insertTestAnswer(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Mutation_insertTestAnswer(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.Mutation().InsertTestAnswer(rctx, fc.Args["answers"].(model.AnswerInsert))
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(*model.Response)
+	fc.Result = res
+	return ec.marshalNResponse2ᚖedu_test_graphᚋgraphᚋmodelᚐResponse(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_Mutation_insertTestAnswer(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Mutation",
+		Field:      field,
+		IsMethod:   true,
+		IsResolver: true,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			switch field.Name {
+			case "statusCode":
+				return ec.fieldContext_Response_statusCode(ctx, field)
+			case "message":
+				return ec.fieldContext_Response_message(ctx, field)
+			}
+			return nil, fmt.Errorf("no field named %q was found under type Response", field.Name)
+		},
+	}
+	defer func() {
+		if r := recover(); r != nil {
+			err = ec.Recover(ctx, r)
+			ec.Error(ctx, err)
+		}
+	}()
+	ctx = graphql.WithFieldContext(ctx, fc)
+	if fc.Args, err = ec.field_Mutation_insertTestAnswer_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
 		ec.Error(ctx, err)
 		return fc, err
 	}
@@ -5304,6 +5396,40 @@ func (ec *executionContext) fieldContext___Type_specifiedByURL(_ context.Context
 
 // region    **************************** input.gotpl *****************************
 
+func (ec *executionContext) unmarshalInputAnswerHelper(ctx context.Context, obj interface{}) (model.AnswerHelper, error) {
+	var it model.AnswerHelper
+	asMap := map[string]interface{}{}
+	for k, v := range obj.(map[string]interface{}) {
+		asMap[k] = v
+	}
+
+	fieldsInOrder := [...]string{"answerId", "questionId"}
+	for _, k := range fieldsInOrder {
+		v, ok := asMap[k]
+		if !ok {
+			continue
+		}
+		switch k {
+		case "answerId":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("answerId"))
+			data, err := ec.unmarshalNID2string(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.AnswerID = data
+		case "questionId":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("questionId"))
+			data, err := ec.unmarshalNID2string(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.QuestionID = data
+		}
+	}
+
+	return it, nil
+}
+
 func (ec *executionContext) unmarshalInputAnswerInput(ctx context.Context, obj interface{}) (model.AnswerInput, error) {
 	var it model.AnswerInput
 	asMap := map[string]interface{}{}
@@ -5332,6 +5458,47 @@ func (ec *executionContext) unmarshalInputAnswerInput(ctx context.Context, obj i
 				return it, err
 			}
 			it.AnswerField = data
+		}
+	}
+
+	return it, nil
+}
+
+func (ec *executionContext) unmarshalInputAnswerInsert(ctx context.Context, obj interface{}) (model.AnswerInsert, error) {
+	var it model.AnswerInsert
+	asMap := map[string]interface{}{}
+	for k, v := range obj.(map[string]interface{}) {
+		asMap[k] = v
+	}
+
+	fieldsInOrder := [...]string{"collectionId", "key", "answers"}
+	for _, k := range fieldsInOrder {
+		v, ok := asMap[k]
+		if !ok {
+			continue
+		}
+		switch k {
+		case "collectionId":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("collectionId"))
+			data, err := ec.unmarshalNID2string(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.CollectionID = data
+		case "key":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("key"))
+			data, err := ec.unmarshalNInt2int(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.Key = data
+		case "answers":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("answers"))
+			data, err := ec.unmarshalNAnswerHelper2ᚕᚖedu_test_graphᚋgraphᚋmodelᚐAnswerHelperᚄ(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.Answers = data
 		}
 	}
 
@@ -5746,6 +5913,13 @@ func (ec *executionContext) _Mutation(ctx context.Context, sel ast.SelectionSet)
 		case "deleteAnswer":
 			out.Values[i] = ec.OperationContext.RootResolverMiddleware(innerCtx, func(ctx context.Context) (res graphql.Marshaler) {
 				return ec._Mutation_deleteAnswer(ctx, field)
+			})
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		case "insertTestAnswer":
+			out.Values[i] = ec.OperationContext.RootResolverMiddleware(innerCtx, func(ctx context.Context) (res graphql.Marshaler) {
+				return ec._Mutation_insertTestAnswer(ctx, field)
 			})
 			if out.Values[i] == graphql.Null {
 				out.Invalids++
@@ -6381,6 +6555,28 @@ func (ec *executionContext) marshalNAnswer2ᚖedu_test_graphᚋgraphᚋmodelᚐA
 	return ec._Answer(ctx, sel, v)
 }
 
+func (ec *executionContext) unmarshalNAnswerHelper2ᚕᚖedu_test_graphᚋgraphᚋmodelᚐAnswerHelperᚄ(ctx context.Context, v interface{}) ([]*model.AnswerHelper, error) {
+	var vSlice []interface{}
+	if v != nil {
+		vSlice = graphql.CoerceList(v)
+	}
+	var err error
+	res := make([]*model.AnswerHelper, len(vSlice))
+	for i := range vSlice {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithIndex(i))
+		res[i], err = ec.unmarshalNAnswerHelper2ᚖedu_test_graphᚋgraphᚋmodelᚐAnswerHelper(ctx, vSlice[i])
+		if err != nil {
+			return nil, err
+		}
+	}
+	return res, nil
+}
+
+func (ec *executionContext) unmarshalNAnswerHelper2ᚖedu_test_graphᚋgraphᚋmodelᚐAnswerHelper(ctx context.Context, v interface{}) (*model.AnswerHelper, error) {
+	res, err := ec.unmarshalInputAnswerHelper(ctx, v)
+	return &res, graphql.ErrorOnPath(ctx, err)
+}
+
 func (ec *executionContext) unmarshalNAnswerInput2edu_test_graphᚋgraphᚋmodelᚐAnswerInput(ctx context.Context, v interface{}) (model.AnswerInput, error) {
 	res, err := ec.unmarshalInputAnswerInput(ctx, v)
 	return res, graphql.ErrorOnPath(ctx, err)
@@ -6406,6 +6602,11 @@ func (ec *executionContext) unmarshalNAnswerInput2ᚕᚖedu_test_graphᚋgraph�
 func (ec *executionContext) unmarshalNAnswerInput2ᚖedu_test_graphᚋgraphᚋmodelᚐAnswerInput(ctx context.Context, v interface{}) (*model.AnswerInput, error) {
 	res, err := ec.unmarshalInputAnswerInput(ctx, v)
 	return &res, graphql.ErrorOnPath(ctx, err)
+}
+
+func (ec *executionContext) unmarshalNAnswerInsert2edu_test_graphᚋgraphᚋmodelᚐAnswerInsert(ctx context.Context, v interface{}) (model.AnswerInsert, error) {
+	res, err := ec.unmarshalInputAnswerInsert(ctx, v)
+	return res, graphql.ErrorOnPath(ctx, err)
 }
 
 func (ec *executionContext) unmarshalNBoolean2bool(ctx context.Context, v interface{}) (bool, error) {
